@@ -17,6 +17,10 @@ module Mixpanel
         Digest::MD5.hexdigest(args.map{|key,val| "#{key}=#{val}"}.sort.join + api_secret)
       end
 
+      def self.generate_import_data(data)
+        Base64.urlsafe_encode64(JSON.generate(data, quirks_mode: true))
+      end
+
       # Return a JSON object or a string depending on a given format
       #
       # @param [String] data either CSV or JSON formatted

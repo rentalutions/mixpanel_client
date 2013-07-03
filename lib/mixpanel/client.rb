@@ -11,6 +11,7 @@ module Mixpanel
   class Client
     BASE_URI = 'https://mixpanel.com/api/2.0'
     DATA_URI = 'https://data.mixpanel.com/api/2.0'
+    API_URI = 'https://api.mixpanel.com/'
 
     attr_reader   :uri
     attr_accessor :api_key, :api_secret, :parallel
@@ -25,6 +26,7 @@ module Mixpanel
     def initialize(config)
       @api_key    = config[:api_key]
       @api_secret = config[:api_secret]
+      @api_token  = config[:token]
       @parallel = config[:parallel] || false
     end
 
@@ -57,6 +59,14 @@ module Mixpanel
         response = %Q|[#{response.split("\n").join(',')}]| if resource == 'export'
         Utils.to_hash(response, @format)
       end
+    end
+
+    def import(event)
+      event["properties"]["token"] ||= @api_token
+      @uri = "#{File.join([API_URI, 'import'])}/?data=#{Utils.generate_import_data(event)}&api_key=#{@api_key}"
+      response = URI.post(@uri)
+      response = %Q|[#{response.split("\n").join(',')}]| if resource == 'export'
+      Utils.to_hash(response, @format)
     end
 
     def prepare_parallel_request
