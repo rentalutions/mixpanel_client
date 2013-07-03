@@ -65,7 +65,6 @@ module Mixpanel
       event["properties"]["token"] ||= @api_token
       @uri = "#{File.join([API_URI, 'import'])}/?data=#{Utils.generate_import_data(event)}&api_key=#{@api_key}"
       response = URI.post(@uri)
-      response = %Q|[#{response.split("\n").join(',')}]| if resource == 'export'
       Utils.to_hash(response, @format)
     end
 
