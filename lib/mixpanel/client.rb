@@ -26,7 +26,7 @@ module Mixpanel
     def initialize(config)
       @api_key    = config[:api_key]
       @api_secret = config[:api_secret]
-      @api_token  = config[:token]
+      @api_token  = config[:token] || config[:api_token]
       @parallel = config[:parallel] || false
     end
 
@@ -64,8 +64,7 @@ module Mixpanel
     def import(event)
       event["properties"]["token"] ||= @api_token
       @uri = "#{File.join([API_URI, 'import'])}/?data=#{Utils.generate_import_data(event)}&api_key=#{@api_key}"
-      response = URI.post(@uri)
-      Utils.to_hash(response, @format)
+      URI.post(@uri)
     end
 
     def prepare_parallel_request
